@@ -1,0 +1,5 @@
+image= postgres:alpine
+name= svi-sveti-postgres
+containerId= 7221c524f9de
+container name= svi-sveti-postgres
+POSTGRES_PASSWORD= realpassword
