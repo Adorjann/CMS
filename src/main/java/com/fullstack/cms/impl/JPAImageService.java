@@ -28,6 +28,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.util.IOUtils;
 import com.fullstack.cms.AwsBucket.BucketName;
@@ -93,7 +94,7 @@ public class JPAImageService implements ImageService{
 	public Image delete(Long id) {
 		Image image = findOne(id);
 		
-		if(image != null) {
+		if(image != null && deleteImageOnS3(image)) {
 			repository.delete(image);
 			return image;
 		}
@@ -208,8 +209,11 @@ public class JPAImageService implements ImageService{
 	public void uploadImageToS3(MultipartFile file, Long albumId) {
 		ImageAlbum album = albumService.findOne(albumId);
 		
-		if((file.isEmpty()) || (album == null)) {
+		if((file.isEmpty()) || (album == null))  {
 			throw new IllegalStateException("Cannot upload emty file [ "+file.getSize()+" ]");
+		}
+		if(album.isSoftDelete()) {
+			throw new IllegalStateException("Cannot upload image to deleted album.");	
 		}
 		
 		//checking file type
@@ -233,7 +237,7 @@ public class JPAImageService implements ImageService{
 		String fileName = file.getOriginalFilename();
 		
 		try {
-			//SKIPING THIS 
+			//TODO debugg this compression
 //			//Image resize *** testing feature 
 //			BufferedImage original = ImageIO.read(file.getInputStream());
 //			BufferedImage resized = new BufferedImage(200, 200, original.getType());
@@ -304,6 +308,27 @@ public class JPAImageService implements ImageService{
 		}
 		
 		
+	}
+	
+	private String getImageKeyFromImage(Image image) {
+		String[] tokens = image.getImagePath().split("/");
+		
+		return tokens[1];
+	}
+	private boolean deleteImageOnS3(Image image) {
+		
+		String imageKeyPrefix = getImageKeyFromImage(image);
+		
+		if(image != null) {
+			try {
+				return filestore.deleteObject(imageKeyPrefix+"/"+image.getFileName());
+				
+			}catch(Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		return false;
 	}
 
 	@Override

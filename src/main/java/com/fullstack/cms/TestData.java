@@ -126,7 +126,7 @@ public class TestData {
 		System.out.println( "Test album 2 is created");
 		imageAlbumDTO testAlbum3 = albumService.createNewImageAlbum("renoviranje zadnje supe");
 		System.out.println( "Test album 3 is created");
-		imageAlbumDTO testAlbum4 = albumService.createNewImageAlbum("govno sa makom");
+		imageAlbumDTO testAlbum4 = albumService.createNewImageAlbum("strudla sa makom");
 		System.out.println( "Test album 4 is created");
 		
 		//publishing albums 3 and 4
@@ -138,6 +138,19 @@ public class TestData {
 			}
 		});
 		
+		imageAlbumDTO testAlbum5 = albumService.createNewImageAlbum("Frausilovicka i 7 patuljaka");
+		System.out.println( "Test album 5 is created");
+		imageAlbumDTO testAlbum6 = albumService.createNewImageAlbum("Kvalitet");
+		System.out.println( "Test album 6 is created");
+		
+		//softDelete albums 5 and 6
+				List<imageAlbumDTO> albums5and6 = new ArrayList<>(Arrays.asList(testAlbum5,testAlbum6));
+				albums5and6.stream().forEach(album -> {
+					ImageAlbum softDeleted = albumService.softDelete(album.getId());
+					if(softDeleted != null) {
+						System.out.println("SOFT DELETED ALBUM ID: "+softDeleted.getId());
+					}
+				});
 		
 		
 		

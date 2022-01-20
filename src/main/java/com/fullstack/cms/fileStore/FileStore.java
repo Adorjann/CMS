@@ -14,6 +14,8 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.util.IOUtils;
+import com.fullstack.cms.AwsBucket.BucketName;
+import com.fullstack.cms.model.Image;
 
 
 @Service
@@ -82,6 +84,22 @@ public class FileStore {
 			System.out.println("----- amazon exteption"+e);
 			throw new IllegalStateException("failed to store to s3"+ e);
 		}
+		
+	}
+
+
+	public boolean deleteObject(String key) {
+		
+		try {
+			s3.deleteObject(BucketName.bucketName,key);
+			return true;
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+		
 		
 	}
 

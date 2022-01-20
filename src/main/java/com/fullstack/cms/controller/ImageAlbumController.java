@@ -178,14 +178,14 @@ public class ImageAlbumController {
 	@ResponseBody
 	public Map<String,Object> softDelete(
 			@RequestParam Long id,
-			@RequestParam boolean publish){
+			@RequestParam boolean softDelete){
 		
 		Map<String,Object> response = new LinkedHashMap<>();
 		
 		try {
 			ImageAlbum updatedAlbum = null;
 			
-			if(publish) {
+			if(softDelete) {
 				updatedAlbum = albumService.softDelete(id);
 			}else {
 				updatedAlbum = albumService.undoSoftDelete(id);

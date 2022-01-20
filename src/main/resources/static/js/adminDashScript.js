@@ -148,6 +148,7 @@ albumHandler= (cardId) => {
         $.get(`Albums`,params, (response)=>{
             if(response.status == 200) {
                 console.log(`albumHandler |response status: 200`)
+                console.log(response);
 
                 let allAlbums = response.albums;
 
@@ -245,7 +246,7 @@ albumHandler= (cardId) => {
                 `</div>`+
            ` </div>`
         );
-
+        
         params={
             publishFROM : null,
             publishTO : null,
@@ -256,6 +257,8 @@ albumHandler= (cardId) => {
         }
         if(activeAlbum.publish == true){
             params.publish = true;
+        }else if(activeAlbum.softDelete == true){
+            params.softDelete = true;
         }
 
         $.get(`Images`,params, (response) => {
@@ -662,6 +665,9 @@ editAlbum= ()=> {
             `   <div id="${buttonName()}" class="editButtonsContainer">`+
             `       <img class="buttonIcon" src="images/publishing.png" >`+
             `   </div>`    +
+            `   <div id="Obrisi Album" class="editButtonsContainer">`+
+            `       <img class="buttonIcon" src="images/trash.png" >`+
+            `   </div>`    +
             `</div>`
         );
         $('.editAlbumDiv:first').append(
@@ -780,33 +786,107 @@ editAlbum= ()=> {
         
     })
 
+	
+	
+
+
     //this is the second button for publish / unpublish
     $(".editButtonsContainer:nth-of-type(2)").click(()=> {
         // choosenCardId is 4,5 or 6 (publish,notPublish,deleted);
         if(choosenCardId == 4){
             //UNpublishing the album
-            Console.log("Radi li publish")
+			let params ={
+                id : $('li.active-text').attr('id'),
+                publish : false
+            }
+            $.post("Albums/Publish", params,(response)=> {
 
-            let params ={
+                if(response.status == 200) {
+
+                    $('#5').click();    
+                }
+            })
+
+        }else if(choosenCardId == 5){
+	
+			let params ={
                 id : $('li.active-text').attr('id'),
                 publish : true
             }
-            $.Post("Albums/Publish", params,(response)=> {
+            $.post("Albums/Publish", params,(response)=> {
 
                 if(response.status == 200) {
 
                     $('#4').click();    
                 }
             })
+        }else{
+			let params ={
+                id : $('li.active-text').attr('id'),
+                softDelete : false
+            }
+            $.post("Albums/SoftDelete", params,(response)=> {
 
-        }else if(choosenCardId == 5){
+                if(response.status == 200) {
 
-        }else if(choosenCardId == 6){
-
-        }
+                    $('#5').click();    
+                }
+            })
+			
+	
+		}
 
     })
 
+    //this is the third button for delete
+    $(".editButtonsContainer:last").click(()=> {
+        
+        if(choosenCardId == 4){
+            //from publish to deleted
+            let params ={
+                id : $('li.active-text').attr('id'),
+                softDelete : true
+            }
+            $.post("Albums/SoftDelete", params,(response)=> {
+
+                if(response.status == 200) {
+
+                    $('#6').click();    
+                }
+            })
+
+        }else if(choosenCardId == 5){
+            //from unPublished to delted
+            let params ={
+                id : $('li.active-text').attr('id'),
+                softDelete : true
+            }
+            $.post("Albums/SoftDelete", params,(response)=> {
+
+                if(response.status == 200) {
+
+                    $('#6').click();    
+                }
+            })
+
+        }else{
+            //from deleted to permanently deleted
+            let params ={
+                id : $('li.active-text').attr('id')
+            }
+            $.post("Albums/Delete", params,(response)=> {
+
+                if(response.status == 200) {
+
+                    $('#6').click();    
+                }
+            })
+        }
+    })
+    if(choosenCardId == 6){
+		$(".editButtonsContainer:first").remove();
+		$(".editButtonsContainer:last").attr('id',"Obrisi Zauvek");
+	}
     
         
 

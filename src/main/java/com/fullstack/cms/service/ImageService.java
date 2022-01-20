@@ -23,6 +23,8 @@ public interface ImageService {
 	
 	Image delete(Long id);
 	
+	
+	
 	Image softDelete(Long id);
 	
 	Image undoSoftDelete(Long id);

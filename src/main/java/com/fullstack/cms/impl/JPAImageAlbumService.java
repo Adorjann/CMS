@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.amazonaws.services.simpleworkflow.flow.core.TryCatch;
 import com.fullstack.cms.DTO.imageAlbumDTO;
+import com.fullstack.cms.fileStore.FileStore;
 import com.fullstack.cms.model.Image;
 import com.fullstack.cms.model.ImageAlbum;
 import com.fullstack.cms.repository.ImageAlbumRepository;
@@ -33,6 +34,9 @@ public class JPAImageAlbumService implements ImageAlbumService{
 	
 	@Autowired
 	private ImageAlbumToImageAlbumDTO toAlbumDTO;
+	
+	@Autowired
+	private FileStore fileStore;
 
 	@Override
 	public ImageAlbum findOne(Long id) {
@@ -73,8 +77,16 @@ public class JPAImageAlbumService implements ImageAlbumService{
 	public ImageAlbum delete(Long id) {
 		ImageAlbum album = findOne(id);
 		
-		if(album != null) {
-			albumRepository.delete(album);
+		if(album != null  ) {
+			//if album is not empty, delete each image album contains
+			if(!album.getImages().isEmpty()) {
+				album.getImages().stream().forEach(image -> {
+					Image deletedImage = imageService.delete(image.getId());
+				});
+			}
+			if(fileStore.deleteObject(album.getId().toString()+"/")){
+				albumRepository.delete(album);
+			}
 			return album;
 		}
 		return null;
@@ -86,10 +98,11 @@ public class JPAImageAlbumService implements ImageAlbumService{
 		ImageAlbum album = findOne(id);
 		
 		if(album != null) {
-			album.setSoftDelete(true);
+			
 			if(album.isPublish()) {
 				undoPublishTheAlbum(album.getId());
 			}
+			album.setSoftDelete(true);
 			//soft-deleting the images inside the album
 			album.getImages().stream().forEach(image -> {
 				imageService.softDelete(image.getId());

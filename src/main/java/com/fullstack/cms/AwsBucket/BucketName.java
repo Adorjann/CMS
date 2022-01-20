@@ -6,10 +6,10 @@ public enum BucketName {
 	
 	IMAGE_STORAGE("demo-buket-cms");
 	
-	private final String bucketName;
+	public static final String bucketName = "demo-buket-cms";
 	
 	BucketName(String bucketName){
-		this.bucketName = bucketName;
+//		this.bucketName = bucketName;
 	}
 	
 	public String getBucketName() {

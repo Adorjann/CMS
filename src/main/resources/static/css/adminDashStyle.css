@@ -245,19 +245,18 @@ input[type="submit"] {
 
 .editAlbumButtons {
   height: 90%;
+  width: 15%;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(1, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  column-gap: 0.1em;
-  row-gap: 0.5em;
   max-width: 25%;
+  margin-left: 5%;
 }
 .editButtonsContainer {
   position: relative;
   height: 70%;
-  width: 80%;
+  width: 50%;
   text-align: center;
-  margin: 0% 0% 28% 20%;
   border: 0.5px solid rgba(50, 104, 196, 0.35);
   box-shadow: 3px 3px 2px rgba(0, 53, 146, 0.35);
   border-radius: 10px;
