@@ -42,82 +42,9 @@ public class TestData {
 		UserProfile savedUser = userProfileService.save(user);
 		
 		//creating the blog post
-		BlogPostDTO dto = blogService.createNewBlogPost(
-				
-				"Adorjan Cizmar",
-				"Just Some Text I Copy Paste to use as headline", 
-				null,
-				"You just call the method on the object. That's one of the big benefits of annotation-driven controllers,"
-				+ " you can write just the methods your code needs without having to bend things out of shape to conform to the interfaces. p<>"
-				+ "So just wire your controller bean into your code, and call the method directly.p<>"
-				+ " Or are you saying you want to re-invent the mechanism by which Spring maps requests on to annotated-controllers? "
-				+ "If so, have a look at the source for Spring's AnnotationMethodHandlerAdapter and DefaultAnnotationHandlerMapping classes. p<>"
-				+ "It's complex, though - annotated controllers make it easier to write controllers, but the underlying mechanism is unpleasant.p");
-		System.out.println(dto.getId());
 		
-		BlogPostDTO dto2 = blogService.createNewBlogPost(
-				"Milos Milosevic",
-				"Short Headline", 
-				null,
-				"You just call the method on the object. That's one of the big benefits of annotation-driven controllers,"
-				+ " you can write just the methods your code needs without having to bend things out of shape to conform to the interfaces. p<>"
-				+"You just call the method on the object. That's one of the big benefits of annotation-driven controllers,"
-				+ " you can write just the methods your code needs without having to bend things out of shape to conform to the interfaces. p<>"
-				+"You just call the method on the object. That's one of the big benefits of annotation-driven controllers,"
-				+ " you can write just the methods your code needs without having to bend things out of shape to conform to the interfaces. p<>"
-				+"You just call the method on the object. That's one of the big benefits of annotation-driven controllers,"
-				+ " you can write just the methods your code needs without having to bend things out of shape to conform to the interfaces. p<>"
-				+"You just call the method on the object. That's one of the big benefits of annotation-driven controllers,"
-				+ " you can write just the methods your code needs without having to bend things out of shape to conform to the interfaces. p<>"
-				+ "So just wire your controller bean into your code, and call the method directly.p<>"
-				+ " Or are you saying you want to re-invent the mechanism by which Spring maps requests on to annotated-controllers? "
-				+ "If so, have a look at the source for Spring's AnnotationMethodHandlerAdapter and DefaultAnnotationHandlerMapping classes. "
-				+ "It's complex, though - annotated controllers make it easier to write controllers, but the underlying mechanism is unpleasant.p"
-				+"You just call the method on the object. That's one of the big benefits of annotation-driven controllers,"
-				+ " you can write just the methods your code needs without having to bend things out of shape to conform to the interfaces. p<>"
-				+ "So just wire your controller bean into your code, and call the method directly.p<>"
-				+ " Or are you saying you want to re-invent the mechanism by which Spring maps requests on to annotated-controllers? "
-				+ "If so, have a look at the source for Spring's AnnotationMethodHandlerAdapter and DefaultAnnotationHandlerMapping classes. "
-				+ "It's complex, though - annotated controllers make it easier to write controllers, but the underlying mechanism is unpleasant.p");
-		System.out.println(dto2.getId());
-		List<BlogPostDTO> posts = new ArrayList<>(Arrays.asList(dto,dto2));
 		
-		posts.stream().forEach(post -> {
-			if(post != null) {
-				System.out.println("Blog Post "+post.getId()+" is CREATED *********");
-				
-				//Publishing the BlogPost
-				BlogPost blogPost = blogService.publishThePost(post.getId());
-				if(blogPost != null) {
-					System.out.println("Blog Post "+post.getId()+" is PUBLISHED *********");
-				}
-			}
-		});
-		BlogPostDTO dto1 = blogService.createNewBlogPost(
-				"Petar Petrovic",
-				"Headline", 
-				null,
-				"You just call the method on the object. That's one of the big benefits of annotation-driven controllers,"
-				+ " you can write just the methods your code needs without having to bend things out of shape to conform to the interfaces. p<>"
-				+ "So just wire your controller bean into your code, and call the method directly."
-				+ "Or are you saying you want to re-invent the mechanism by which Spring maps requests on to annotated-controllers? p<>"
-				+ "If so, have a look at the source for Spring's AnnotationMethodHandlerAdapter and DefaultAnnotationHandlerMapping classes. "
-				+ "It's complex, though - annotated controllers make it easier to write controllers, but the underlying mechanism is unpleasant.p");
-		System.out.println(dto1.getId());
-			
 		
-		List<BlogPost> pBlogPosts = blogService.findAll();
-		pBlogPosts.stream().forEach(post ->{
-			System.out.println("searchBlogPosts POST ID:  "+ post.getId());
-			System.out.println("POST HEADLINE: "+ post.getHeadline());
-		});
-		
-		// Be back on this the pagination is bugging for some reason
-		
-//		List<BlogPostDTO> pBlogPosts2 = blogService.paginatedBlogPosts(true, false,null,  null, null, null, "three".compareTo("3"));
-//		pBlogPosts2.stream().forEach(post ->{
-//			System.out.println("findAll POST ID:  "+ post.getId());
-//		});
 		
 		
 		imageAlbumDTO testAlbum1 = albumService.createNewImageAlbum("portreti");

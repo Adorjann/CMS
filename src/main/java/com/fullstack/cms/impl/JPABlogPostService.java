@@ -95,8 +95,10 @@ public class JPABlogPostService implements BlogPostService{
 				undoPublishThePost(post.getId());
 			}
 			post.setSoftDelete(true);
-			//soft-deleting the album
-			albumService.softDelete(post.getAlbum().getId());
+			if(post.getAlbum() != null) {
+				//soft-deleting the album
+				albumService.softDelete(post.getAlbum().getId());
+			}
 			BlogPost updatedPost = update(post);
 			
 			if(updatedPost != null) {

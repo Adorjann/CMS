@@ -126,6 +126,7 @@ albumHandler= (cardId) => {
     if(contentBoard.children().length > 1) {
         $('.content').children().last().remove();
     }
+    
 
         let params={
             publishFROM : null,
@@ -304,12 +305,14 @@ albumHandler= (cardId) => {
 };
 
 blogHandler = (cardId) => {
+    $('#preview').click();
     const asideList = $('.aside-ul-container ul');
     let contentBoard = $('.content');
 
     if(contentBoard.children().length > 1) {
         $('.content').children().last().remove();
     }
+    
     
 
         let params = {
@@ -395,29 +398,40 @@ blogHandler = (cardId) => {
               `  <h2 class="naslov"> ${activePost.headline}</h2>`+
                 `<div class="text">`+
                     
-                `</div>`+
-                `<h3>Autor: ${activePost.author}</h3> `+
+               
             `</article>`        )
 
         let articleText = $(".blog article .text");
         
-         //Changing the blogText
-        let articleSections = activePost.blogText.split("<>");//spliting the html sections
+        
+        let blogPostData = JSON.parse(activePost.blogText) // Blog Post Data Object
 
         articleText.children().remove();
-        articleSections.forEach(section => {
-            //section  mark is a <p> tag for now
-            let sectionMark = section.substring(section.length - 1, section.length);//getting the html tag
+        blogPostData.blocks.forEach(block => {
             
+            let sectionTag = getSectionTag(block);
+
             articleText.append(
-                `<${sectionMark}>`+
-                `${section.substring(0,section.length -1)}`+
-                `</${sectionMark}>`
+                `<${sectionTag}>`+
+                `${block.data.text}`+
+                `</${sectionTag}>`
             );
 
         });
 
     };
+    getSectionTag =(block)=> {
+
+        switch(block.type) {
+            case "paragraph":
+                return "p";
+                
+            case "header":
+                return `h${block.data.level}`;
+
+                  
+        }
+    }
 };
 
 buttonsRouting = () => {
@@ -437,7 +451,7 @@ buttonsRouting = () => {
             if(buttonId == `preview`){
                 if(lastActiveButton != "preview"){
 
-                        console.log(`preview`);
+                    $('.editAlbumButtons').remove();
                     removeActiveText(buttonsList);
                     $(button).addClass('active-text');
 
@@ -495,6 +509,7 @@ newAlbum=()=> {
     let pictures = $('.pictures');
 
     pictures.children().remove();
+    $('.editAlbumButtons').remove();
     
     pictures.append(
         `<form class:"naslovAlbuma">`+
@@ -557,10 +572,11 @@ newAlbum=()=> {
             $('.content').append(
 
                 `<div class="backSave">`+
-                    `<div class="backSaveButtons" ><h3 id="back">Sačuvaj</h3></div>`+
-                    `<div class="backSaveButtons" ><h3 id="save">Poništi</h3></div>`+
+                    `<div class="backSaveButtons" ><h3 id="back">Poništi</h3></div>`+
+                    `<div class="backSaveButtons" ><h3 id="save">Sačuvaj</h3></div>`+
                 `</div>`
             );
+
 
 
             $('.backSaveButtons:last').click(()=>{
@@ -636,10 +652,8 @@ editAlbum= ()=> {
         pictures.append('<div class="editAlbumDiv"></div>');
         $('.editAlbumDiv:last').prepend($('.pictures-container'));
 
-        picturesContainer.css('grid-template-columns','repeat(4, 1fr)');
+        picturesContainer.css('grid-template-columns','repeat(5, 1fr)');
         picturesContainer.css('grid-template-rows','repeat(2, 1fr)');
-        picturesContainer.css('height','90%');
-        picturesContainer.css('width','70%');
         picturesContainer.css('overflow-y','auto');
         picturesContainer.css('overflow-x','hidden');
         picturesContainer.css('padding','1vh 2vw');
@@ -656,7 +670,7 @@ editAlbum= ()=> {
 
         }
     
-        $('.editAlbumDiv:last').append(
+        $('.buttonsContainer').append(
             `<div class="editAlbumButtons">`+
             `   <div id="Dodaj sliku" class="editButtonsContainer">`+
             `       <img class="buttonIcon" src="images/photo.png" >`+
@@ -737,7 +751,7 @@ editAlbum= ()=> {
                     $(listItem).append(listDetails);
 
                     //prompting the back or save buttons
-                    backSaveButtons($('.pictures'),()=>{
+                    backSaveButtons($('.content'),()=>{
                         // SAVE button function:
                         let theAlbumId = $('li.active-text').attr('id');
                         console.log(`Uploading pictures to Album ID: ${theAlbumId} `);
@@ -759,7 +773,7 @@ editAlbum= ()=> {
                                      console.log(response.exception);
                                  }else if(response.status == 201){
                                     $(".backSave").remove();
-                                    $('aside ul li.active-text').click();
+                                    ('aside ul li.active-text').click();$
     
                                  }
                             }
@@ -772,7 +786,7 @@ editAlbum= ()=> {
                         $('#preview').parent().click();
                         $('#edit').parent().click();
 
-                    },"Potvrdi dodavanje slike");
+                    });
                     
                 }else{
                     //Wrong type picture
@@ -789,104 +803,15 @@ editAlbum= ()=> {
 	
 	
 
+    buttonsPublishAndDelete("Albums",choosenCardId);
 
-    //this is the second button for publish / unpublish
-    $(".editButtonsContainer:nth-of-type(2)").click(()=> {
-        // choosenCardId is 4,5 or 6 (publish,notPublish,deleted);
-        if(choosenCardId == 4){
-            //UNpublishing the album
-			let params ={
-                id : $('li.active-text').attr('id'),
-                publish : false
-            }
-            $.post("Albums/Publish", params,(response)=> {
-
-                if(response.status == 200) {
-
-                    $('#5').click();    
-                }
-            })
-
-        }else if(choosenCardId == 5){
-	
-			let params ={
-                id : $('li.active-text').attr('id'),
-                publish : true
-            }
-            $.post("Albums/Publish", params,(response)=> {
-
-                if(response.status == 200) {
-
-                    $('#4').click();    
-                }
-            })
-        }else{
-			let params ={
-                id : $('li.active-text').attr('id'),
-                softDelete : false
-            }
-            $.post("Albums/SoftDelete", params,(response)=> {
-
-                if(response.status == 200) {
-
-                    $('#5').click();    
-                }
-            })
-			
-	
-		}
-
-    })
-
-    //this is the third button for delete
-    $(".editButtonsContainer:last").click(()=> {
-        
-        if(choosenCardId == 4){
-            //from publish to deleted
-            let params ={
-                id : $('li.active-text').attr('id'),
-                softDelete : true
-            }
-            $.post("Albums/SoftDelete", params,(response)=> {
-
-                if(response.status == 200) {
-
-                    $('#6').click();    
-                }
-            })
-
-        }else if(choosenCardId == 5){
-            //from unPublished to delted
-            let params ={
-                id : $('li.active-text').attr('id'),
-                softDelete : true
-            }
-            $.post("Albums/SoftDelete", params,(response)=> {
-
-                if(response.status == 200) {
-
-                    $('#6').click();    
-                }
-            })
-
-        }else{
-            //from deleted to permanently deleted
-            let params ={
-                id : $('li.active-text').attr('id')
-            }
-            $.post("Albums/Delete", params,(response)=> {
-
-                if(response.status == 200) {
-
-                    $('#6').click();    
-                }
-            })
-        }
-    })
     if(choosenCardId == 6){
-		$(".editButtonsContainer:first").remove();
-		$(".editButtonsContainer:last").attr('id',"Obrisi Zauvek");
-	}
+        $(".editButtonsContainer:first").remove();
+        $(".editAlbumButtons").css('justify-content','flex-end');
+        $(".editButtonsContainer:last").css('margin-left','1.2em')
+        $(".editButtonsContainer:last").attr('id',"Obrisi Zauvek");
+    }
+    
     
         
 
@@ -911,9 +836,107 @@ editAlbum= ()=> {
         };    
         
 };
+const buttonsPublishAndDelete=(requestMapping,choosenCardId)=>{
+
+    //this is the second button for publish / unpublish
+    $(".editButtonsContainer:nth-of-type(2)").click(()=> {
+        // choosenCardId is 4,5 or 6 (publish,notPublish,deleted);
+        if(choosenCardId == 4){
+            //UNpublishing the album
+			let params ={
+                id : $('li.active-text').attr('id'),
+                publish : false
+            }
+            $.post(`${requestMapping}/Publish`, params,(response)=> {
+
+                if(response.status == 200) {
+
+                    $('#5').click();    
+                }
+            })
+
+        }else if(choosenCardId == 5){
+	
+			let params ={
+                id : $('li.active-text').attr('id'),
+                publish : true
+            }
+            $.post(`${requestMapping}/Publish`, params,(response)=> {
+
+                if(response.status == 200) {
+
+                    $('#4').click();    
+                }
+            })
+        }else{
+			let params ={
+                id : $('li.active-text').attr('id'),
+                softDelete : false
+            }
+            $.post(`${requestMapping}/SoftDelete`, params,(response)=> {
+
+                if(response.status == 200) {
+
+                    $('#5').click();    
+                }
+            })
+			
+	
+		}
+
+    })
+
+    //this is the third button for delete
+    $(".editButtonsContainer:last").click(()=> {
+        
+        if(choosenCardId == 4){
+            //from publish to deleted
+            let params ={
+                id : $('li.active-text').attr('id'),
+                softDelete : true
+            }
+            $.post(`${requestMapping}/SoftDelete`, params,(response)=> {
+
+                if(response.status == 200) {
+
+                    $('#6').click();    
+                }
+            })
+
+        }else if(choosenCardId == 5){
+            //from unPublished to delted
+            let params ={
+                id : $('li.active-text').attr('id'),
+                softDelete : true
+            }
+            $.post(`${requestMapping}/SoftDelete`, params,(response)=> {
+
+                if(response.status == 200) {
+
+                    $('#6').click();    
+                }
+            })
+
+        }else{
+            //from deleted to permanently deleted
+            let params ={
+                id : $('li.active-text').attr('id')
+            }
+            $.post(`${requestMapping}/Delete`, params,(response)=> {
+
+                if(response.status == 200) {
+
+                    $('#6').click();    
+                }
+            })
+            
+        }
+        
+    })
+}
 
             
-const backSaveButtons=(jObject,save,back,poruka)=>{
+const backSaveButtons=(jObject,save,back)=>{
 
     /*parameters: -JQuery object to append buttons to.
               -function to perform for click on button "Potvrdi"(save)
@@ -921,22 +944,16 @@ const backSaveButtons=(jObject,save,back,poruka)=>{
               -message to display above buttons
     */ 
             
-    if(poruka == "" || poruka == undefined || poruka == null) {
-        poruka = "Potvrdi Izmenu";
-    }
+    
     
 
         jObject.append(
 
             `<div class="backSave">`+
-                `<div class="buttonsDescription"><h3 class="buttonDescriptionH3">${poruka}</h3></div>`+
                 `<div class="backSaveButtons" ><h3 id="back">Poništi</h3></div>`+
                 `<div class="backSaveButtons" ><h3 id="save">Sačuvaj</h3></div>`+
             `</div>`
-        );
-        $('.buttonsDescription:last').css('right','30%');
-        $('.buttonsDescription:last').css('top','0%');
-         $('.buttonsDescription:last').css('visibility', 'visible');   
+        );   
 
 
         $('.backSaveButtons:last').click(()=>{
@@ -955,6 +972,124 @@ const backSaveButtons=(jObject,save,back,poruka)=>{
 
 newBlogPost=()=> {
     console.log(`newBlogPost function is called`);
+    
+    if($('.content').children().length > 1) {
+        while($('.content').children().length != 1){
+            $('.content').children().last().remove();
+        }
+        
+    }
+    
+    let article = $(document.createElement('article'));
+    $('.content').append(article);
+
+    article.children().remove();
+    $('.editAlbumButtons').remove();
+    
+    article.append(
+        `<form class:"naslovAlbuma" style="margin-top:10%;">`+
+        `    <input type="text" autocomplete="off" name="nazivBloga" placeholder="Naslov blog post-a.." required>`+
+        `     <input type="submit" value="Nastavi">`+
+        `</form>`
+    );
+
+    var editor = null;
+    $("form").eq(0).submit((e)=> {
+        console.log('pritisnut submit')
+
+        let newBlogPostHeadline = $('form input:text').val();
+        
+        article.children().slideUp("500", ()=> {
+
+            let blogCreated = $(
+                `<h2 class="naslov">${newBlogPostHeadline}</h2>`+
+                    
+                    `<div id="editorHolder" class="text"></div>`
+            );
+            blogCreated.appendTo(article).slideDown("500");
+             editor = new EditorJS({
+                holder: 'editorHolder',
+            
+                tools:{
+                    header:Header,
+                    paragraph: {
+                     class: Paragraph,
+                     inlineToolbar: true,
+                   }
+                },
+                
+             }
+            );
+        });
+        
+
+        article.animate({
+            bottom: "11%",
+            height: "64%"
+        },500,()=>{
+
+            
+            backSaveButtons($(".content"),()=>{
+                //button save was clicked
+                editor.save().then((outputData) => {
+                    
+                    params={
+                        headline: newBlogPostHeadline,
+                        blogText: JSON.stringify(outputData)
+                    };
+                    $.post('BlogPosts/Create',params, (response)=>{
+            
+                        if(response.status == 201){
+                            console.log(`uspesno snimljen novi blog post`);
+    
+                            $(".backSave").remove();
+                            $('#5').click();
+                            
+                            
+                                setTimeout(()=>{
+                                    $('aside ul').children().each((index,headline)=>{
+                                    if($(headline).text() == response.newBlogPost.headline){
+                                        $(headline).click();
+                                        $('.button:last').click();
+                                    }
+                                })
+                                },50);
+                                
+                            
+                            
+                        }else{
+                            console.log(`NEUSPESNO snimljen novi albun`)
+                        }
+                        
+                    })
+
+                }).catch((error) => {
+                    console.log('Saving failed: ', error)
+                    
+                });
+
+            },()=>{
+                //button back was clicked
+                console.log("you clicked BACK");
+                $(".backSave").remove();
+                $('.button:nth-child(2)').click();
+            })
+
+
+           
+        });
+        
+        
+
+
+
+        
+        
+
+
+
+        e.preventDefault();
+    })    
 };
 editBlogPost=()=>{};
 

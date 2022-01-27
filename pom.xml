@@ -140,6 +140,8 @@
 		    <groupId>org.flywaydb</groupId>
 		    <artifactId>flyway-core</artifactId>
 		</dependency> -->
+		<!-- https://mvnrepository.com/artifact/org.webjars.npm/editorjs__editorjs -->
+		
 		
 
 		<dependency>
@@ -156,7 +158,8 @@
 		
 		
 		
-		<!-- webjar bootstrap and jquery dependencies -->
+		<!-- Js library Dependency  -->
+		
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>bootstrap</artifactId>
@@ -167,6 +170,7 @@
             <artifactId>jquery</artifactId>
             <version>3.5.1</version>
         </dependency>
+        
 	</dependencies>
 
 	<build>
